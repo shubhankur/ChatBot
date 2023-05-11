@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="UTF-8">
+    <title>Chatbot Webapp</title>
+    <style>
+      /* Add CSS styling for the chatbot interface */
+      .chat-container {
+        width: 100%;
+        max-width: 400px;
+        margin: auto;
+        border: 1px solid #ccc;
+        padding: 10px;
+        border-radius: 5px;
+      }
+      .chat-container h1 {
+        text-align: center;
+        font-size: 24px;
+      }
+      .chat-messages {
+        height: 300px;
+        overflow-y: scroll;
+      }
+      .chat-messages p {
+        margin: 5px 0;
+      }
+      .chat-input {
+        width: 100%;
+        padding: 5px;
+        border: 1px solid #ccc;
+        border-radius: 5px;
+      }
+      .chat-btn {
+        width: 100%;
+        padding: 10px;
+        background-color: #4CAF50;
+        color: white;
+        border: none;
+        border-radius: 5px;
+        cursor: pointer;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="chat-container">
+      <h1>Chatbot Webapp</h1>
+      <div class="chat-messages"></div>
+      <input type="text" class="chat-input" placeholder="Type your message here...">
+      <button class="chat-btn">Send</button>
+    </div>
+
+    <script>
+      const chatMessages = document.querySelector('.chat-messages');
+      const chatInput = document.querySelector('.chat-input');
+      const chatBtn = document.querySelector('.chat-btn');
+
+      // Add event listener to send user message to the backend
+      chatBtn.addEventListener('click', () => {
+        const userInput = chatInput.value;
+        if (userInput.trim() !== '') {
+          chatMessages.innerHTML += '<p>You: ' + userInput + '</p>';
+          chatInput.value = '';
+          // Send user input to backend using fetch API
+          fetch('/api/chatbot', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({ message: userInput })
+          })
+          .then(response => response.json())
+          .then(data => {
+            // Display chatbot response
+            chatMessages.innerHTML += '<p>' + data.message + '</p>';
+          })
+          .catch(error => {
+            console.error('Error:', error);
+            chatMessages.innerHTML += '<p> Sorry, could not get that </p>';
+          });
+        }
+      });
+    </script>
+  </body>
+</html>
