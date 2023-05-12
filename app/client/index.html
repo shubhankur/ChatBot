@@ -61,17 +61,17 @@
           chatMessages.innerHTML += '<p>You: ' + userInput + '</p>';
           chatInput.value = '';
           // Send user input to backend using fetch API
-          fetch('/api/chatbot', {
+          fetch('http://127.0.0.1:5000/chat', {
             method: 'POST',
             headers: {
               'Content-Type': 'application/json'
             },
             body: JSON.stringify({ message: userInput })
           })
-          .then(response => response.json())
-          .then(data => {
+          .then(async response => {
+            const data = await response.json();
             // Display chatbot response
-            chatMessages.innerHTML += '<p>' + data.message + '</p>';
+            chatMessages.innerHTML += '<p>Chatbot: ' + data.message + '</p>';
           })
           .catch(error => {
             console.error('Error:', error);

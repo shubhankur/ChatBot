@@ -3,13 +3,13 @@ from transformers import GPT2Tokenizer, GPT2Config, GPT2LMHeadModel, TextDataset
 
 tokenizer = GPT2Tokenizer.from_pretrained('gpt2')
 model = GPT2LMHeadModel.from_pretrained('gpt2')
-model_path = "models/factoid_generator.pt"
+model_path = "models/chitchat_generator.pt"
 
 tokenizer = GPT2Tokenizer.from_pretrained('gpt2', padding_side='left')
 model.load_state_dict(torch.load(model_path,map_location=torch.device('cpu')))
 
 import re
-def getFactoidResponse(input_text):
+def getChitChatResponse(input_text):
   input_ids = tokenizer.encode(input_text, return_tensors='pt')
   if(len(input_ids)<=0):
     print(input_text)

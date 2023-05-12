@@ -39,5 +39,3 @@ def classify(new_query):
     else:
         print("The input query is a chitchat query.")
         return 1
-
-print(classify("Where does penguin live?"))
