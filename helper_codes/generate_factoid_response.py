@@ -1,9 +1,14 @@
 import torch
 from transformers import GPT2Tokenizer, GPT2Config, GPT2LMHeadModel, TextDataset, DataCollatorForLanguageModeling, Trainer, TrainingArguments
+from huggingface_hub import hf_hub_download
+import joblib
+
+REPO_ID = "shubhankur/chatbot"
+FILENAME = "models/factoid_generator.pt"
 
 tokenizer = GPT2Tokenizer.from_pretrained('gpt2')
 model = GPT2LMHeadModel.from_pretrained('gpt2')
-model_path = "models/factoid_generator.pt"
+model_path = hf_hub_download(repo_id=REPO_ID, filename=FILENAME)
 
 tokenizer = GPT2Tokenizer.from_pretrained('gpt2', padding_side='left')
 model.load_state_dict(torch.load(model_path,map_location=torch.device('cpu')))

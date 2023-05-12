@@ -17,6 +17,9 @@ app = Flask(__name__)
 CORS(app, resources={r"/*": {"origins": "*"}}, methods=["OPTIONS", "GET", "POST", "PUT", "DELETE"], allow_headers=["*"])
 convstarted = 0
 msgcounter = 0
+personalityEvaluation = 0
+awaitingPersonalityEvaluation = 0
+userpersonality = ""
 
 # Define a route to handle incoming chatbot messages
 @app.route('/', methods=['GET'])
@@ -33,10 +36,38 @@ def get_user_message():
     data = request.get_json()
     user_input = data['message']
     msg = ""
+    global awaitingPersonalityEvaluation 
+    global personalityEvaluation
+    if(awaitingPersonalityEvaluation==1):
+        if(user_input == "No"):
+            personalityEvaluation = -1
+            awaitingPersonalityEvaluation = 0
+            return jsonify({'message': "Okay! Let's Chat Then"})
+        elif(user_input =="Yes"):
+            personalityEvaluation = 1
+            return jsonify({'message': "Please type 1 for id, 2 for ego and 3 for superego"})
+        elif(user_input == "1" or user_input == "2" or user_input == "3"):
+            if(user_input == "1"):
+                userpersonality="id"
+            if(user_input== "2"):
+                userpersonality="ego"
+            if(user_input=="3"):
+                userpersonality="superego"
+            personalityEvaluation = 1
+            awaitingPersonalityEvaluation=0
+        else:
+            personalityEvaluation = -1
+            awaitingPersonalityEvaluation = 0
     type = classify(user_input)
     if(type==1):
         user_input = "User: "+user_input
-        msg = getChitChatResponse(user_input)
+        if(personalityEvaluation==0):
+            msg = "Do want to participate in personality evaluation?"
+            awaitingPersonalityEvaluation = 1
+        elif(personalityEvaluation=1):
+            msg = "getSigmudResponse"
+        else:
+            msg = getChitChatResponse(user_input)
     else:
         msg = getFactoidResponse(user_input)
     # if(convstarted==0):

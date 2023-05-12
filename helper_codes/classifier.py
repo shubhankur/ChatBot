@@ -4,7 +4,7 @@ import numpy as np
 # from tensorflow.keras.preprocessing.sequence import pad_sequences
 # tokenize the queries
 import tensorflow as tf
-with open('datasets/totalclassifierdata.txt', 'r') as f:
+with open('models/classifier-NN/totalclassifierdata.txt', 'r') as f:
     lines = f.readlines()
     data = {'query': [], 'label': []}
     for line in lines:
@@ -39,3 +39,5 @@ def classify(new_query):
     else:
         print("The input query is a chitchat query.")
         return 1
+
+classify("Hello")

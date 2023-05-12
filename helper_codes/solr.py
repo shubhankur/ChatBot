@@ -7,9 +7,9 @@ import string
 
 nltk.download('stopwords')
 #Create a Solr client
-solr = pysolr.Solr('http://localhost:8983/solr/chatbot')
-push_url = 'http://localhost:8983/solr/chatbot/update?commit=true'
-fetch_url = 'http://localhost:8983/solr/chatbot/select'
+solr = pysolr.Solr('http://69.55.55.225:8983/solr/#/chatbot_new/')
+push_url = 'http://69.55.55.225:8983/solr/#/chatbot_new/'
+fetch_url = 'http://69.55.55.225:8983/solr/#/chatbot_new/'
 
 def get_responses_custom(input):
     input = input.translate(str.maketrans('', '', string.punctuation))
