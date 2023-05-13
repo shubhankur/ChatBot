@@ -9,5 +9,3 @@ sentence_transformers==2.2.2
 tensorflow==2.11.0
 torch==2.0.1
 transformers==4.24.0
-Flask==2.0.3
-Flask_Cors==3.0.10
