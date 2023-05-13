@@ -126,7 +126,7 @@ def eval():
     elif(user_input=="reset"):
         userpersonality = ""
         personalityEvaluation = -1
-    # Return a response with the chatbot's message
+    # Return a response with the chatbsot's message
     return jsonify({'message': 'This is a response from the chatbot!'})
 
 @app.route('/clear', methods = ['POST'])
