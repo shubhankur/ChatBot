@@ -8,6 +8,7 @@
       .chat-container {
         width: 100%;
         max-width: 400px;
+        height: 75vh;
         margin: auto;
         border: 1px solid #ccc;
         padding: 10px;
@@ -17,8 +18,12 @@
         text-align: center;
         font-size: 24px;
       }
+      .chat-container .counter-button{
+        text-align: right;
+        font-size: 10px;
+      }
       .chat-messages {
-        height: 300px;
+        height: 70%;
         overflow-y: scroll;
       }
       .chat-messages p {
@@ -39,20 +44,79 @@
         border-radius: 5px;
         cursor: pointer;
       }
+      .personality-eval-btn {
+        margin-top: 10px;
+        padding: 10px;
+        background-color: #008CBA;
+        color: white;
+        border: none;
+        border-radius: 5px;
+        cursor: pointer;
+      }
+      .personality-value{
+        margin-top: 10px;
+        padding: 10px;
+        background-color: #00ba00;
+        color: white;
+        border: none;
+        border-radius: 5px;
+        cursor: pointer;
+      }
+      .clear-button {
+        background-color: #ff6b6b;
+        color: white;
+        border: none;
+        border-radius: 5px;
+        padding: 0.5rem 1rem;
+        cursor: pointer;
+        position: absolute;
+        top: 0.5rem;
+      }
     </style>
   </head>
   <body>
     <div class="chat-container">
-      <h1>Chatbot Webapp</h1>
+      <h1>Chatbot Webapp</h1> 
+      <button class="clear-button">Clear</button>
+      <p class="counter-button">0 out of 20</p>
       <div class="chat-messages"></div>
       <input type="text" class="chat-input" placeholder="Type your message here...">
       <button class="chat-btn">Send</button>
+      <button class="personality-eval-btn">Personality Evaluation?</button>
+      <button class="personality-value">None</button>
     </div>
 
     <script>
       const chatMessages = document.querySelector('.chat-messages');
       const chatInput = document.querySelector('.chat-input');
       const chatBtn = document.querySelector('.chat-btn');
+      const personalityEvalBtn = document.querySelector('.personality-eval-btn');
+      const personalityValueEl = document.querySelector('.personality-value');
+      const clearButton = document.querySelector('.clear-button');
+      const counterButton = document.querySelector('.counter-button');
+
+      personalityEvalBtn.insertAdjacentElement('afterend', personalityValueEl);
+
+      // Add an event listener to the clear button to erase the conversation
+      clearButton.addEventListener('click', () => {
+        fetch('http://127.0.0.1:5000/clear', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({ msg : "clear" })
+          })
+          .then(response => {
+            if (!response.ok) {
+              throw new Error('Network response was not ok');
+            }
+            chatMessages.innerHTML = '';
+          })
+          .catch(error => {
+            console.error('Error:', error);
+            chatMessages.innerHTML += '<p>Chatbot: Sorry, I could not clear the messages.</p>';
+          });
+      });
 
       // Add event listener to send user message to the backend
       chatBtn.addEventListener('click', () => {
@@ -71,11 +135,61 @@
           .then(async response => {
             const data = await response.json();
             // Display chatbot response
+            const personality = data.personality;
             chatMessages.innerHTML += '<p>Chatbot: ' + data.message + '</p>';
+
+            if(personality) {
+              personalityValueEl.textContent = personality;
+            }
+            console.log(data)
+            console.log(data.del_flag)
+            console.log(typeof(data.del_flag))
+            if(String(data.del_flag) == "1" ){
+              console.log("empty")
+              chatMessages.innerHTML = '';
+              chatMessages.innerHTML = '<p> Conversation Cleared, You reached the maxm context limit </p>';
+            }
+            count = data.count
+            console.log(count)
+            var counter = count+" out of 20"
+            counterButton.textContent = counter
+            console.log(counter)
           })
           .catch(error => {
             console.error('Error:', error);
             chatMessages.innerHTML += '<p> Sorry, could not get that </p>';
+          });
+        }
+      });
+      //Enter/Return button should hit as well
+      chatInput.addEventListener('keyup', event => {
+        if (event.keyCode === 13) {
+          chatBtn.click();
+        }
+      });
+      // Add event listener to send selected option to the backend
+      personalityEvalBtn.addEventListener('click', () => {
+        const selectedOption = prompt('Please select an option (id, ego, super_ego, reset):');
+        if (selectedOption !== null && selectedOption.trim() !== '') {
+          // Send selected option to backend using fetch API
+          if(selectedOption!= "reset")personalityValueEl.textContent = selectedOption
+          else personalityValueEl.textContent = "None"
+          fetch('http://127.0.0.1:5000/eval', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({ option: selectedOption })
+          })
+          .then(response => {
+            if (!response.ok) {
+              throw new Error('Network response was not ok');
+            }
+            chatMessages.innerHTML += '<p>Chatbot: Thank you for participating in the personality evaluation.</p>';
+          })
+          .catch(error => {
+            console.error('Error:', error);
+            chatMessages.innerHTML += '<p>Chatbot: Sorry, I could not complete the personality evaluation at this time.</p>';
           });
         }
       });

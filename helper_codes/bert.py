@@ -9,7 +9,8 @@ def get_most_similar_response(input_query, responses):
   input_query_embedding_tensor = torch.tensor(input_query_embedding)
   similarity_scores = torch.nn.functional.cosine_similarity(input_query_embedding_tensor, response_embeddings_tensor)
   most_similar_idx = similarity_scores.argmax().item()
-  return most_similar_idx
+  score = similarity_scores[torch.tensor(most_similar_idx)].item()
+  return most_similar_idx, score
 
 input_query = "What is the capital of France?"
 responses = [
@@ -19,5 +20,5 @@ responses = [
   "Paris is one of my favorite cities in the world."
 ]
 
-index = get_most_similar_response(input_query, responses)
+index, score = get_most_similar_response(input_query, responses)
 print(index)
