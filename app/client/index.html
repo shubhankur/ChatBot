@@ -87,6 +87,7 @@
     </div>
 
     <script>
+      var url = "http://127.0.0.1:5000/"
       const chatMessages = document.querySelector('.chat-messages');
       const chatInput = document.querySelector('.chat-input');
       const chatBtn = document.querySelector('.chat-btn');
@@ -94,12 +95,13 @@
       const personalityValueEl = document.querySelector('.personality-value');
       const clearButton = document.querySelector('.clear-button');
       const counterButton = document.querySelector('.counter-button');
+      console.log(url);
 
       personalityEvalBtn.insertAdjacentElement('afterend', personalityValueEl);
 
       // Add an event listener to the clear button to erase the conversation
       clearButton.addEventListener('click', () => {
-        fetch('http://127.0.0.1:5000/clear', {
+        fetch(url+'clear', {
             method: 'POST',
             headers: {
               'Content-Type': 'application/json'
@@ -125,7 +127,7 @@
           chatMessages.innerHTML += '<p>You: ' + userInput + '</p>';
           chatInput.value = '';
           // Send user input to backend using fetch API
-          fetch('http://127.0.0.1:5000/chat', {
+          fetch(url+'chat', {
             method: 'POST',
             headers: {
               'Content-Type': 'application/json'
@@ -174,7 +176,7 @@
           // Send selected option to backend using fetch API
           if(selectedOption!= "reset")personalityValueEl.textContent = selectedOption
           else personalityValueEl.textContent = "None"
-          fetch('http://127.0.0.1:5000/eval', {
+          fetch(url+'eval', {
             method: 'POST',
             headers: {
               'Content-Type': 'application/json'

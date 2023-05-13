@@ -4,7 +4,7 @@ import numpy as np
 # from tensorflow.keras.preprocessing.sequence import pad_sequences
 # tokenize the queries
 import tensorflow as tf
-with open('models/classifier-NN/totalclassifierdata.txt', 'r') as f:
+with open('helper_files/totalclassifierdata.txt', 'r') as f:
     lines = f.readlines()
     data = {'query': [], 'label': []}
     for line in lines:
@@ -24,7 +24,7 @@ labels = dataset['label']
 tokenizer = tf.keras.preprocessing.text.Tokenizer()
 tokenizer.fit_on_texts(queries)
 vocab_size = len(tokenizer.word_index) + 1
-model = tf.keras.models.load_model('models/classifier-NN')
+model = tf.keras.models.load_model('helper_files/classifier-NN')
 sequences = tokenizer.texts_to_sequences(queries)
 max_len = max([len(seq) for seq in sequences])
 
