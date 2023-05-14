@@ -4,7 +4,7 @@ import numpy as np
 # from tensorflow.keras.preprocessing.sequence import pad_sequences
 # tokenize the queries
 import tensorflow as tf
-with open('helper_files/totalclassifierdata.txt', 'r') as f:
+with open('helper_codes/helper_files/totalclassifierdata.txt', 'r') as f:
     lines = f.readlines()
     data = {'query': [], 'label': []}
     for line in lines:
@@ -15,7 +15,6 @@ with open('helper_files/totalclassifierdata.txt', 'r') as f:
         else:
             continue
     dataset = pd.DataFrame(data)
-
 # extract the input queries and their corresponding labels
 queries = dataset['query']
 labels = dataset['label']

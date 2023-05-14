@@ -1,7 +1,6 @@
 import torch
 from transformers import GPT2Tokenizer, GPT2Config, GPT2LMHeadModel, TextDataset, DataCollatorForLanguageModeling, Trainer, TrainingArguments
 from huggingface_hub import hf_hub_download
-import joblib
 
 REPO_ID = "shubhankur/chatbot"
 id_FILENAME = "models/id.pt"
