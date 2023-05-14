@@ -5,11 +5,8 @@
 import sys 
 import os
 import re
-# sys.path.append(os.path.abspath("helper_codes"))
-# import helper_codes
-sys.path
-# sys.path.insert(0, '/Users/shubhankarkumar/Documents/Class Lectures/2nd Sem/NLP/ChatBot/helper_codes')
-sys.path.insert(0, '/root/ChatBot/helper_codes')
+
+sys.path.append(os.path.abspath("helper_codes"))
 from solr import get_responses_custom
 from bert import get_most_similar_response
 from generate_factoid_response import getFactoidResponse
@@ -17,10 +14,6 @@ from classifier import classify
 from generate_chitchat_response import getChitChatResponse
 from generate_sigmund_response import getIdResponse, getEgoResponse, getSuperEgoResponse
 
-from flask import Flask, request, jsonify
-from flask_cors import CORS
-app = Flask(__name__)
-CORS(app, resources={r"/*": {"origins": "*"}}, methods=["OPTIONS", "GET", "POST", "PUT", "DELETE"], allow_headers=["*"])
 convstarted = 0
 msgcounter = 0
 personalityEvaluation = 0
@@ -29,35 +22,23 @@ userpersonality = ""
 conv_history = ""
 conv_counter = 0
 
-# Define a route to handle incoming chatbot messages
-@app.route('/', methods=['GET'])
-def index():
-    # Get the message from the request body
-    # Do some processing with the message (e.g., pass it to a machine learning model)
-    message = request
-    # Return a response with the chatbot's message
-    return jsonify({'message': 'This is a response from the chatbot!'})
-
-@app.route('/chat', methods=['POST'])
-def get_user_message():
-    # Get the message from the request body
+def get_user_message(user_input):
     del_flag = 0
-    data = request.get_json()
-    user_input = data['message']
     msg = ""
+    user_input = user_input.lower()
     global awaitingPersonalityEvaluation 
     global personalityEvaluation
     global userpersonality
     global conv_history
     global conv_counter
     if(awaitingPersonalityEvaluation==1):
-        if(user_input == "No"):
+        if(user_input == "no"):
             personalityEvaluation = -1
             awaitingPersonalityEvaluation = 0
-            return jsonify({'message': "Okay! Let's Chat Then"})
-        elif(user_input =="Yes"):
+            return "Okay! Let's Chat Then"
+        elif(user_input =="yes"):
             personalityEvaluation = 1
-            return jsonify({'message': "Please type 1 for id, 2 for ego and 3 for superego"})
+            return "Please type 1 for id, 2 for ego and 3 for superego"
         elif(user_input == "1" or user_input == "2" or user_input == "3"):
             if(user_input == "1"):
                 userpersonality="id"
@@ -67,7 +48,7 @@ def get_user_message():
                 userpersonality="superego"
             personalityEvaluation = 1
             awaitingPersonalityEvaluation=0
-            return jsonify({'message': "Thanks for your input! Let's Chat Then"})
+            return "Thanks for your input! Let's Chat Then"
         else:
             personalityEvaluation = -1
             awaitingPersonalityEvaluation = 0
@@ -110,12 +91,9 @@ def get_user_message():
         conv_history = ""
         conv_counter = 0
         del_flag = 1
-    return jsonify({'message': filtered_response, 'personality':userpersonality, 'count':conv_counter, 'del_flag':del_flag})
+    return filtered_response
 
-@app.route('/eval', methods=['POST'])
-def eval():
-    data = request.get_json()
-    user_input = data['option']
+def eval(user_input):
     global personalityEvaluation
     global userpersonality
     if(user_input=="id"):
@@ -131,15 +109,14 @@ def eval():
         userpersonality = ""
         personalityEvaluation = -1
     # Return a response with the chatbsot's message
-    return jsonify({'message': 'This is a response from the chatbot!'})
+    return print('This is a response from the chatbot!')
 
-@app.route('/clear', methods = ['POST'])
 def clear_chat():
     global conv_history
     global conv_counter
     conv_history = ""
     conv_counter = 0
-    return jsonify({'message': 'Chat Cleared'})
+    return print('Chat Cleared')
 
 
 def get_factoid_response(user_input):
@@ -157,16 +134,17 @@ def get_factoid_response(user_input):
         if(score<0.4):
             getFactoidResponse(user_input)
         response = doc['question'][0] +"\n" + doc['answer'][0]
-        print("Result found in IR")
-        print(score)
         ir_response = response
     else:
-        print("Result not found in IR. Generating response")
         response = getFactoidResponse(user_input)
         neural_response = response
-    print(f"User Query: {user_input}")
-    print(f"Response : {response}")
     return response
 
-if __name__ == '__main__':
-    app.run(host='0.0.0.0', port=5000)
+while True:
+    user_input = input("Enter a message: ")
+    if user_input.lower() == "stop":
+        print("Stopping the program...")
+        break
+    else:
+        print("Bot: ", get_user_message(user_input))
+    

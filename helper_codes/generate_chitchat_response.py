@@ -16,7 +16,6 @@ import re
 def getChitChatResponse(input_text):
   input_ids = tokenizer.encode(input_text, return_tensors='pt')
   if(len(input_ids)<=0):
-    print(input_text)
     return None
   output_ids = model.generate(input_ids,pad_token_id=tokenizer.eos_token_id, max_length=70,early_stopping=True)
   output_text = tokenizer.decode(output_ids[0], skip_special_tokens=True)

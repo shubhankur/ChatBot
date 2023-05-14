@@ -42,8 +42,7 @@ def classify(new_query):
     new_query_padded = tf.keras.preprocessing.sequence.pad_sequences(new_query_sequence, maxlen=max_len, padding='post')
     prediction = np.argmax(model.predict(new_query_padded), axis=-1)
     if prediction == 1:
-        print("The input query is a topical query.")
         return 2
     else:
-        print("The input query is a chitchat query.")
+        # print("The input query is a chitchat query.")
         return 1
