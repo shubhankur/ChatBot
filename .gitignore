@@ -1,3 +1,4 @@
-datasets/extra
-models
+datasets
 extra
+models/large_models
+.env
