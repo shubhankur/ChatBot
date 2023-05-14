@@ -5,7 +5,8 @@
 2. If you want to use locally. The python version is in runtime.txt file and all the required dependencies are in requirements.txt file.
 You just need to **pip install requirements.txt** file to install all the required dependencies.
 
-3. If you are using conda instead of pip, all the conda packages are present in environment.yml file.
+3. If you are using conda instead of pip, all the conda packages are present in environment.yml file. 
+**conda env create -f environment.yml**
 
 4. If you dont want to interact with the frontend and want to run using command line, just run **python main.py** in the root directory. The main python file is in the root directory as main.py 
 
