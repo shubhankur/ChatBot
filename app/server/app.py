@@ -5,14 +5,16 @@
 import sys 
 import os
 import re
-sys.path.append(os.path.abspath("helper_codes"))
-import helper_codes
-from helper_codes.solr import get_responses_custom
-from helper_codes.bert import get_most_similar_response
-from helper_codes.generate_factoid_response import getFactoidResponse
-from helper_codes.classifier import classify
-from helper_codes.generate_chitchat_response import getChitChatResponse
-from helper_codes.generate_sigmund_response import getIdResponse, getEgoResponse, getSuperEgoResponse
+# sys.path.append(os.path.abspath("helper_codes"))
+# import helper_codes
+sys.path
+sys.path.insert(0, '/Users/shubhankarkumar/Documents/Class Lectures/2nd Sem/NLP/ChatBot/helper_codes')
+from solr import get_responses_custom
+from bert import get_most_similar_response
+from generate_factoid_response import getFactoidResponse
+from classifier import classify
+from generate_chitchat_response import getChitChatResponse
+from generate_sigmund_response import getIdResponse, getEgoResponse, getSuperEgoResponse
 
 from flask import Flask, request, jsonify
 from flask_cors import CORS
