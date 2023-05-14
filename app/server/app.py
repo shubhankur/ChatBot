@@ -5,6 +5,8 @@
 import sys 
 import os
 import re
+path = os.path.abspath("helper_codes")
+print(path)
 sys.path.append(os.path.abspath("helper_codes"))
 from solr import get_responses_custom
 from bert import get_most_similar_response

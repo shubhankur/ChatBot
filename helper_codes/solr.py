@@ -6,6 +6,8 @@ from nltk.corpus import stopwords
 import string
 
 nltk.download('stopwords')
+stop_words = set(stopwords.words('english'))
+
 #Create a Solr client
 solr = pysolr.Solr('http://69.55.55.225:8983/solr/chatbot_new/')
 push_url = 'http://69.55.55.225:8983/solr/chatbot_new/'
@@ -13,7 +15,6 @@ fetch_url = 'http://69.55.55.225:8983/solr/chatbot_new/select'
 
 def get_responses_custom(input):
     input = input.translate(str.maketrans('', '', string.punctuation))
-    stop_words = set(stopwords.words('english'))
     user_query_words = input.split()
     user_query_words_filtered = [word for word in user_query_words if word not in stop_words]
     # user_query_filtered = ' '.join(user_query_words_filtered)
