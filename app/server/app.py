@@ -1,24 +1,10 @@
-#get answer from solr
-#if solr returns an answer --> Use BERT to find most similar question and respond
-#if not ---> Use generator to genrate an answer
-
-import sys 
-import os
 import re
-# sys.path.append(os.path.abspath("helper_codes"))
-# import helper_codes
-sys.path
-# sys.path.insert(0, '/Users/shubhankarkumar/Documents/Class Lectures/2nd Sem/NLP/ChatBot/helper_codes')
-sys.path.insert(0, '/root/ChatBot/helper_codes')
-from solr import get_responses_custom
-from bert import get_most_similar_response
-from generate_factoid_response import getFactoidResponse
-from classifier import classify
-from generate_chitchat_response import getChitChatResponse
-from generate_sigmund_response import getIdResponse, getEgoResponse, getSuperEgoResponse
-
+import base64
+from helper_codes import solr, bert, generate_factoid_response, classifier, generate_chitchat_response, generate_sigmund_response
 from flask import Flask, request, jsonify
 from flask_cors import CORS
+# import google.cloud as gc
+# from gc import speech
 app = Flask(__name__)
 CORS(app, resources={r"/*": {"origins": "*"}}, methods=["OPTIONS", "GET", "POST", "PUT", "DELETE"], allow_headers=["*"])
 convstarted = 0
@@ -44,7 +30,7 @@ def get_user_message():
     del_flag = 0
     data = request.get_json()
     user_input = data['message']
-    msg = ""
+    msg = "message"
     global awaitingPersonalityEvaluation 
     global personalityEvaluation
     global userpersonality
@@ -71,7 +57,7 @@ def get_user_message():
         else:
             personalityEvaluation = -1
             awaitingPersonalityEvaluation = 0
-    type = classify(user_input)
+    type = 1 #classifier.classify(user_input)
     if(type==1):
         user_input = "User: "+user_input
         if(personalityEvaluation==0):
@@ -79,13 +65,13 @@ def get_user_message():
             awaitingPersonalityEvaluation = 1
         elif(personalityEvaluation==1):
             if(userpersonality=="id"):
-                msg = getIdResponse(user_input)
+                msg = generate_sigmund_response.getIdResponse(user_input)
             elif(userpersonality=="ego"):
-                msg = getEgoResponse(user_input)
+                msg = generate_sigmund_response.getEgoResponse(user_input)
             elif(userpersonality=="superego"):
-                msg = getSuperEgoResponse(user_input)
+                msg = generate_sigmund_response.getSuperEgoResponse(user_input)
         else:
-            msg = getChitChatResponse(user_input)
+            msg = generate_chitchat_response.getChitChatResponse(user_input)
     else:
         msg = get_factoid_response(user_input)
     if (msg.startswith("Bot")):
@@ -143,30 +129,57 @@ def clear_chat():
 
 
 def get_factoid_response(user_input):
-    responses = get_responses_custom(user_input)
-    numFound = responses['response']['numFound']
-    response = ""
-    if(numFound>0):
+    # responses = solr.get_responses_custom(user_input)
+    # numFound = responses['response']['numFound']
+    response = "response"
+    if(False):
         docs = responses['response']['docs']
         questions = []
         for each in docs:
             found_question = each['question'][0]
             questions.append(found_question)
-        index, score = get_most_similar_response(user_input, questions)
+        index, score = bert.get_most_similar_response(user_input, questions)
         doc = docs[index]
         if(score<0.4):
-            getFactoidResponse(user_input)
+            generate_factoid_response.getFactoidResponse(user_input)
         response = doc['question'][0] +"\n" + doc['answer'][0]
         print("Result found in IR")
         print(score)
         ir_response = response
     else:
         print("Result not found in IR. Generating response")
-        response = getFactoidResponse(user_input)
+        response = generate_factoid_response.getFactoidResponse(user_input)
         neural_response = response
     print(f"User Query: {user_input}")
     print(f"Response : {response}")
     return response
+
+
+@app.route('/voice', methods=['POST'])
+def voice_recognition():
+    data = request.get_json()
+    audio_base64 = data['audioBase64']
+
+    # Decode base64-encoded audio
+    audio_bytes = base64.b64decode(audio_base64)
+
+    # Call the Google Cloud Speech-to-Text API
+    client = speech.SpeechClient()
+    audio = speech.RecognitionAudio(content=audio_bytes)
+    config = speech.RecognitionConfig(
+        encoding=speech.RecognitionConfig.AudioEncoding.LINEAR16,
+        sample_rate_hertz=16000,
+        language_code="en-US",
+    )
+
+    response = client.recognize(config=config, audio=audio)
+
+    # Extract the recognized text
+    transcript = ""
+    for result in response.results:
+        transcript += result.alternatives[0].transcript
+
+    return jsonify({'transcript': transcript})
 
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=5000)
